@@ -1,0 +1,16 @@
+{
+  "name": "ai.transforms.utilities",
+  "version": "0.2.0",
+  "displayName": "TransformsAI Utilities",
+  "description": "Set of utility scripts used by Transitional Forms in Unity",
+  "unity": "2020.3",
+  "unityRelease": "15f2",
+  "documentationUrl": "https://github.com/transformsai/UnityUtilities",
+  "dependencies": {  },
+  "keywords": [],
+  "author": {
+    "name": "Transitional Forms Inc",
+    "email": "developers@transforms.ai",
+    "url": "http://transforms.ai"
+  }
+}
