@@ -1,6 +1,6 @@
 {
     "name": "Utilities.Editor",
-    "rootNamespace": "",
+    "rootNamespace": "TransformsAI.Unity.Utilities.Editor",
     "references": [
         "GUID:2477acf73fcc7aa47bb9ead2c13c5fc4"
     ],

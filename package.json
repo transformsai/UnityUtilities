@@ -1,6 +1,6 @@
 {
   "name": "ai.transforms.utilities",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "displayName": "TransformsAI Utilities",
   "description": "Set of utility scripts used by Transitional Forms in Unity",
   "unity": "2020.3",
