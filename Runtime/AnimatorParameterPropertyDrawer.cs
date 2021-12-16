@@ -52,8 +52,11 @@ namespace TransformsAI.Unity.Utilities
             return 0 != animator.parameterCount;
         }
     }
+}
 #endif
 
+namespace TransformsAI.Unity.Utilities
+{
     [System.AttributeUsage(System.AttributeTargets.Field)]
     public class AnimatorParameterAttribute : PropertyAttribute { }
 }

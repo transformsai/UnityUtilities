@@ -133,9 +133,11 @@ namespace TransformsAI.Unity.Utilities
             EditorGUI.showMixedValue = false;
         }
     }
-
+}
 #endif
 
+namespace TransformsAI.Unity.Utilities
+{
     [AttributeUsage(AttributeTargets.Field)]
     public class MinMaxSliderAttribute : PropertyAttribute
     {

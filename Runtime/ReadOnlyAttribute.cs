@@ -4,10 +4,10 @@ namespace TransformsAI.Unity.Utilities
 {
     public class ReadOnlyAttribute : PropertyAttribute
     {
- 
+
     }
 
- 
+
 #if UNITY_EDITOR
     [UnityEditor.CustomPropertyDrawer(typeof(ReadOnlyAttribute))]
     public class ReadOnlyDrawer : UnityEditor.PropertyDrawer
