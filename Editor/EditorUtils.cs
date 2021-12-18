@@ -81,7 +81,7 @@ namespace TransformsAI.Unity.Utilities.Editor
         public static bool DrawDefaultDrawer(this SerializedProperty prop, Rect position, GUIContent label = null, bool includeChildren = true) =>
             PropertyHandler.OnGUI(position, prop, label, includeChildren);
 
-        public static void DrawContents(this SerializedProperty property, Rect position, List<string> excludedProperties = null)
+        public static bool DrawContents(this SerializedProperty property, Rect position, List<string> excludedProperties = null)
         {
             property = property.Copy();
             var yDiff = 0f;
@@ -89,7 +89,7 @@ namespace TransformsAI.Unity.Utilities.Editor
             var myDepth = property.depth;
             while (property.NextVisible(enter))
             {
-                if(property.depth <= myDepth) break;
+                if (property.depth <= myDepth) break;
                 enter = false;
                 if (excludedProperties != null && excludedProperties.Contains(property.name)) continue;
                 yDiff += PaddingSize;
@@ -98,6 +98,8 @@ namespace TransformsAI.Unity.Utilities.Editor
                 property.DrawDefaultDrawer(myRect);
                 yDiff += height + PaddingSize;
             }
+
+            return yDiff != 0;
         }
 
         public static float GetContentHeight(this SerializedProperty property, List<string> excludedProperties = null)
