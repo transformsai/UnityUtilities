@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEditor;
@@ -16,40 +17,43 @@ namespace TransformsAI.Unity.Utilities.Editor
 
         public static object ReflectedValue(this SerializedProperty prop)
         {
-            
             var getter = MakeGetter(prop);
             var target = prop.serializedObject.targetObject;
             return getter(target);
         }
 
-        public static Func<object, object> MakeGetter(SerializedProperty prop)
+        public static object ContainerObject(this SerializedProperty prop)
+        {
+            var getter = MakeGetter(prop, true);
+            var target = prop.serializedObject.targetObject;
+            return getter(target);
+        }
+
+        public static Func<object, object> MakeGetter(SerializedProperty prop, bool getParent = false)
         {
             object obj = prop.serializedObject.targetObject;
             if (obj == null) throw new Exception("Target object is null!");
 
             var path = prop.propertyPath.Replace(".Array.data[", "[");
+            var elements = path.Split('.');
+
+            if (getParent)
+            {
+                elements = elements.Reverse().Skip(1).Reverse().ToArray();
+                path = string.Join(".", elements);
+            }
+
+            if (elements.Length == 0) return so => so;
 
             var type = obj.GetType();
             var tag = $"{type.FullName}:{path}";
 
-            if (GetterCache.TryGetValue(tag, out var getter)) return getter;
+            if (GetterCache.TryGetValue(tag, out var cachedGetter)) return cachedGetter;
 
-            foreach (var element in path.Split('.'))
+            Func<object, object> getter = null;
+            foreach (var element in elements)
             {
-                var indexMatch = IndexMatcher.Match(element);
-
-                Func<object, object> newGetter;
-                if (indexMatch.Success)
-                {
-                    var elementName = indexMatch.Groups[1].Value;
-                    var index = int.Parse(indexMatch.Groups[2].Value);
-                    newGetter = MakeGetter(type, elementName, index, out type);
-                }
-                else
-                {
-                    newGetter = MakeGetter(type, element, out type);
-                }
-
+                var newGetter = MakeGetter(type, element, out type);
                 // save old getter to capture in lambda
                 var oldGetter = getter;
                 getter = getter == null ? newGetter : source => newGetter(oldGetter(source));
@@ -59,22 +63,39 @@ namespace TransformsAI.Unity.Utilities.Editor
             return getter;
         }
 
-        private static Func<object, object> MakeGetter(Type type, string name, out Type newType)
+        private static Func<object, object> MakeGetter(Type type, string element, out Type innerType)
         {
-            var f = type.GetField(name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-            
-            if (f == null) throw new Exception($"Could not Make getter for {type.Name}.{name}");
+            var indexMatch = IndexMatcher.Match(element);
+            Func<object, object> newGetter;
+            if (indexMatch.Success)
+            {
+                var elementName = indexMatch.Groups[1].Value;
+                var index = int.Parse(indexMatch.Groups[2].Value);
+                newGetter = MakeListGetter(type, elementName, index, out innerType);
+            }
+            else
+            {
+                newGetter = MakeObjectGetter(type, element, out innerType);
+            }
 
-            newType = f.FieldType;
-            return source => f.GetValue(source);
-
+            return newGetter;
         }
 
-        private static Func<object, object> MakeGetter(Type type, string name, int index, out Type innerType)
+        private static Func<object, object> MakeObjectGetter(Type type, string name, out Type innerType)
         {
-            var listGetter = (Func<object, IList>)MakeGetter(type, name, out var listType);
+            var f = type.GetField(name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+
+            if (f == null) throw new Exception($"Could not Make getter for {type.Name}.{name}");
+
+            innerType = f.FieldType;
+            return source => f.GetValue(source);
+        }
+
+        private static Func<object, object> MakeListGetter(Type type, string name, int index, out Type innerType)
+        {
+            var listGetter = MakeGetter(type, name, out var listType);
             innerType = listType.GenericTypeArguments[0];
-            return obj => listGetter(obj)[index];
+            return obj => ((IList)listGetter(obj))[index];
 
         }
     }

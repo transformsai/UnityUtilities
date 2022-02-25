@@ -58,6 +58,26 @@ namespace TransformsAI.Unity.Utilities.Editor
             return ret;
         }
 
+        
+        public static (Rect left, Rect right) SplitHorizontally(this Rect rect, float splitPercent)
+        {
+            var left = rect;
+            left.xMax -= rect.width * splitPercent;
+            var right = rect;
+            right.xMin += left.width;
+            return (left, right);
+        }
+
+        
+        public static (Rect top, Rect bot) SplitVertically(this Rect rect, float splitPercent)
+        {
+            var first = rect;
+            first.yMax -= rect.height * splitPercent;
+            var second = rect;
+            second.yMin += first.height;
+            return (first, second);
+        }
+
 
         public static Rect Indent(this Rect rect, float? indent = null)
         {
