@@ -92,6 +92,29 @@ namespace TransformsAI.Unity.Utilities.Editor
             rect.y += y;
             return rect;
         }
+        
+        public static Rect SplitLabel(this Rect rect, GUIContent label)
+        {
+            var labelRect = rect;
+            labelRect.xMax = labelRect.xMin + EditorGUIUtility.labelWidth;
+
+            EditorGUI.LabelField(labelRect, label);
+
+            var remainder = rect;
+            remainder.xMin = labelRect.xMax;
+            return remainder;
+        }
+        public static bool SplitFoldout(this Rect rect, bool value, GUIContent label, out Rect remainder)
+        {
+            var labelRect = rect;
+            labelRect.xMax = labelRect.xMin + EditorGUIUtility.labelWidth;
+            remainder = rect;
+            remainder.xMin = labelRect.xMax;
+
+            return EditorGUI.Foldout(labelRect,value, label);
+
+            
+        }
 
 
 

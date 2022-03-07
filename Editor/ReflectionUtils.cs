@@ -95,7 +95,12 @@ namespace TransformsAI.Unity.Utilities.Editor
         {
             var listGetter = MakeGetter(type, name, out var listType);
             innerType = listType.GenericTypeArguments[0];
-            return obj => ((IList)listGetter(obj))[index];
+            return obj =>
+            {
+                var list = (IList) listGetter(obj);
+                if (index > list.Count) return null;
+                return list[index];
+            };
 
         }
     }
