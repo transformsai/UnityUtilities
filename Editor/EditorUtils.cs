@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -161,6 +162,21 @@ namespace TransformsAI.Unity.Utilities.Editor
             }
 
             return yDiff;
+        }
+
+    }
+    public readonly struct ContentColorScope : IDisposable
+    {
+        private readonly Color _lastColor;
+        public ContentColorScope(Color newColor)
+        {
+            _lastColor = GUI.contentColor;
+            GUI.contentColor = newColor;
+        }
+
+        public void Dispose()
+        {
+            GUI.contentColor = _lastColor;
         }
     }
 }
