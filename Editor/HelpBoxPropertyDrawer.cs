@@ -1,4 +1,5 @@
 
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,7 +18,19 @@ namespace TransformsAI.Unity.Utilities.Editor
         }
         public override void OnGUI(Rect position)
         {
-            EditorGUI.HelpBox(position, HelpBoxAttribute.Message, HelpBoxAttribute.MessageType);
+            EditorGUI.HelpBox(position, HelpBoxAttribute.Message, Convert(HelpBoxAttribute.MessageType));
         }
-    }
+        public static MessageType Convert(MessageTypes type)
+        {
+            switch (type)
+            {
+                case MessageTypes.None:     return MessageType.None;
+                case MessageTypes.Info:     return MessageType.Info;
+                case MessageTypes.Warning:  return MessageType.Warning;
+                case MessageTypes.Error:    return MessageType.Error;
+                default: throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+        }
+    } 
+   
 }

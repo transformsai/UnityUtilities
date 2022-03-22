@@ -6,7 +6,7 @@ namespace TransformsAI.Unity.Utilities
 {
     public class HelpBoxAttribute : PropertyAttribute
     {
-        public HelpBoxAttribute(string message, MessageType messageType = MessageType.None)
+        public HelpBoxAttribute(string message, MessageTypes messageType = MessageTypes.None)
         {
             _data = new HelpBoxData {Message = message, MessageType = messageType};
         }
@@ -29,12 +29,20 @@ namespace TransformsAI.Unity.Utilities
         private readonly Func<HelpBoxData> _dataGetter = null;
         public HelpBoxData Data => _data ?? _dataGetter();
         public string Message => Data.Message;
-        public MessageType MessageType => Data.MessageType;
+        public MessageTypes MessageType => Data.MessageType;
     }
 
     public struct HelpBoxData
     {
         public string Message { get; set; }
-        public MessageType MessageType { get; set; }
+        public MessageTypes MessageType { get; set; }
+    }
+
+    public enum MessageTypes
+    {
+        None,
+        Info,
+        Warning,
+        Error,
     }
 }
