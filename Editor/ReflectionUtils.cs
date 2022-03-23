@@ -14,7 +14,7 @@ namespace TransformsAI.Unity.Utilities.Editor
 
         private static readonly Dictionary<string, Func<object, object>> GetterCache = new Dictionary<string, Func<object, object>>();
 
-
+        
         public static object ReflectedValue(this SerializedProperty prop)
         {
             var getter = MakeGetter(prop);
