@@ -1,4 +1,5 @@
-using System.Reflection;
+using System;
+using TransformsAI.Unity.Utilities;
 using TransformsAI.Unity.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
@@ -20,29 +21,15 @@ public class DrawIfDrawer : PropertyDrawer
             return true;
         }
 
-        var field = type.GetField(drawIfAttribute.FieldOrPropertyName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.FlattenHierarchy);
-
-        if (field != null)
+        try
         {
-            if (field.FieldType == typeof(bool)) return (bool)field.GetValue(container);
-
-            Debug.LogError($"Field ({field.Name}) is not bool : {property.propertyPath}", property.serializedObject.context);
+            return type.GetFieldOrPropertyValue<bool>(drawIfAttribute.FieldOrPropertyName, container);
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e, property.serializedObject.targetObject);
             return true;
         }
-
-        var prop = type.GetProperty(drawIfAttribute.FieldOrPropertyName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.FlattenHierarchy);
-
-        if (prop != null)
-        {
-            if (prop.PropertyType == typeof(bool)) return (bool)prop.GetValue(container);
-
-            Debug.LogError($"Property ({prop.Name}) is not bool : {property.propertyPath}", property.serializedObject.context);
-            return true;
-        }
-
-        Debug.LogError("Could not find Field/Property " + property.propertyPath, property.serializedObject.context);
-
-        return true;
     }
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label) =>
